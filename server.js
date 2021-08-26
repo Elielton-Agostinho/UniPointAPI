@@ -26,11 +26,12 @@ app.use(express.static(__dirname + '/public'))
 app.listen(port, () => {})
 
 
-
-//Página Números primos (POST)
-app.post('/primo', (req, res) => {
+app.post('/login', (req, res) => {
     
-    let valor = req.body.inputPrimo;
+    let matricula = req.body.matricula;
+	let senha = req.body.senha;
+	console.log(matricula+"\n"+senha)
+	
 	var resposta = "";
     
 	const mysql = require('mysql');
@@ -49,8 +50,8 @@ app.post('/primo', (req, res) => {
 	conn.connect(
 		function (err) { 
 		if (err) { 
-			resposta = "!!! Cannot connect !!! Error:";
-			throw err;
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			throw resposta;
 		}
 		else
 		{
@@ -59,17 +60,22 @@ app.post('/primo', (req, res) => {
 	});
 
 	function queryDatabase(){
-		conn.query('SELECT * FROM ALUNOS WHERE MATRICULA = ?;', [valor], 
-				function (err, results, fields) {
-					if (err) throw res.end(err);
-			else{
-				var qry = '';
-				for (i = 0; i < results.length; i++) {
-					qry += JSON.stringify(results[i]);
-				}
+		conn.query('SELECT COUNT(*) AS quant FROM ALUNOS WHERE MATRICULA = ? AND SENHA LIKE ? ;', [matricula,senha], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify({"result":err});}
+				else{
+					console.log(results[0].quant);
+					if(parseInt(results[0].quant) === 0){
+						qry = JSON.stringify({"result":false});
+					}else{
+						qry = JSON.stringify({"result":true});
+					}
+					
+				} 
 				res.end(qry);
-			} 
-		})
+			}
+		)
 		/*conn.query('INSERT INTO ALUNOS(MATRICULA, NOME, EMAIL) VALUES (?, ?, ?);', [2026438, 'Usuário Teste', 'email@teste.com'], 
 				function (err, results, fields) {
 					if (err) throw res.end(err);
