@@ -23,7 +23,9 @@ app.use(expressLayouts)           // Definimos que vamos utilizar o express-ejs-
 app.use(bodyParser.urlencoded())  // Com essa configuração, vamos conseguir parsear o corpo das requisições
 
 app.use(express.static(__dirname + '/public'))
-app.listen(port, () => {})
+app.listen(port, () => {
+	console.log(`A mágica acontece em http://localhost:${port}`);
+})
 
 
 app.post('/login', (req, res) => {
@@ -36,13 +38,13 @@ app.post('/login', (req, res) => {
     
 	const mysql = require('mysql');
 
-	var config =
+	var config = 
 	{
-		host: 'unpt.mysql.database.azure.com',
-		user: 'elielton@unpt',
-		password: 'Li3345ag',
-		database: 'unipoint',
-		port: 3306
+		host: 'us-cdbr-east-04.cleardb.com',
+		user: 'b716da7f56001b',
+		password: '9e5f384d',
+		database: 'heroku_b402f720b46aaff',
+		port: '3306'
 	};
 
 	const conn = new mysql.createConnection(config);
@@ -51,7 +53,7 @@ app.post('/login', (req, res) => {
 		function (err) { 
 		if (err) { 
 			resposta = "!!! Cannot connect !!! Error:"+err;
-			throw resposta;
+			res.end(JSON.stringify({"result":resposta}));
 		}
 		else
 		{
