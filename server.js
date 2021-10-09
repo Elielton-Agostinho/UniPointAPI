@@ -53,14 +53,16 @@ app.post('/login', (req, res) => {
 		function (err) { 
 		if (err) { 
 			resposta = "!!! Cannot connect !!! Error:"+err;
-			res.end(JSON.stringify({"result":resposta}));
+			console.log({"result":resposta});
 		}
 		else
 		{
 			queryDatabase();
+			conn.end();
+
 		}
 	});
-
+	
 	function queryDatabase(){
 		conn.query('SELECT COUNT(*) AS quant FROM ALUNOS WHERE MATRICULA = ? AND SENHA LIKE ? ;', [matricula,senha], 
 			function (err, results, fields) {
