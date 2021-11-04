@@ -270,7 +270,7 @@ app.post('/pontoBatido', (req, res) => {
 	
 		
 	function queryDatabase(){
-		conn.query('SELECT COUNT(*) AS PONTO FROM PONTO WHERE ID_ALUNO = ? AND ID_CHAMADA = ? AND TIPO = "E";', [matricula,disciplina], 
+		conn.query('select (case when (SELECT COUNT(*) FROM PONTO AS P INNER JOIN CHAMADA AS C ON P.ID_CHAMADA = C.ID WHERE P.ID_ALUNO = ? AND C.ID_DISCIPLINA = ? AND P.TIPO = "E" ) = 0 then "E" else "S" end) AS RETORNO', [matricula,disciplina], 
 			function (err, results, fields) {
 				let qry = '';
 				if (err){ qry = JSON.stringify(err);}
@@ -309,13 +309,8 @@ app.post('/setPonto', (req, res) => {
 	});
 	
 	function queryDatabase(){
-		let typ = null;
-		if (tipo == 0) {
-			typ = 'E';
-		} else {
-			typ = 'S';
-		}
-		conn.query('INSERT INTO PONTO(ID_ALUNO, ID_CHAMADA, TIPO) VALUES (?, ?, ?) ;', [matricula,disciplina,typ], 
+		
+		conn.query('INSERT INTO PONTO(ID_ALUNO, ID_CHAMADA, TIPO) VALUES (?, ?, ?) ;', [matricula,disciplina,tipo], 
 			function (err, results, fields) {
 				let qry = '';
 				if (err){ qry = JSON.stringify({"error":err});}
