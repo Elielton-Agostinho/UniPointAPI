@@ -27,6 +27,14 @@ app.listen(port, () => {
 	console.log(`A mágica acontece em http://localhost:${port}`);
 })
 
+config = 
+	{
+		host: 'us-cdbr-east-04.cleardb.com',
+		user: 'b716da7f56001b',
+		password: '9e5f384d',
+		database: 'heroku_b402f720b46aaff',
+		port: '3306'
+	};
 
 app.post('/login', (req, res) => {
     
@@ -37,15 +45,6 @@ app.post('/login', (req, res) => {
 	var resposta = "";
     
 	const mysql = require('mysql');
-
-	var config = 
-	{
-		host: 'us-cdbr-east-04.cleardb.com',
-		user: 'b716da7f56001b',
-		password: '9e5f384d',
-		database: 'heroku_b402f720b46aaff',
-		port: '3306'
-	};
 
 	const conn = new mysql.createConnection(config);
 
@@ -90,4 +89,313 @@ app.post('/login', (req, res) => {
 	
 	
     
-})
+})//Fim
+
+app.post('/getAluno', (req, res) => {
+    
+    let matricula = req.body.matricula;
+	
+	var resposta = "";
+    
+	const mysql = require('mysql');
+
+	const conn = new mysql.createConnection(config);
+
+	conn.connect(
+		function (err) { 
+		if (err) { 
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			console.log({"result":resposta});
+		}
+		else
+		{
+			queryDatabase();
+			conn.end();
+
+		}
+	});
+	
+	function queryDatabase(){
+		conn.query('SELECT * FROM ALUNOS WHERE MATRICULA = ?;', [matricula], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify(err);}
+				else{ qry = JSON.stringify(results); } 
+				res.end(qry);
+			}
+		)
+		/*conn.query('INSERT INTO ALUNOS(MATRICULA, NOME, EMAIL) VALUES (?, ?, ?);', [2026438, 'Usuário Teste', 'email@teste.com'], 
+				function (err, results, fields) {
+					if (err) throw res.end(err);
+			else res.end("Inserted " + results.affectedRows + " row(s).");
+		})*/
+	};
+	
+	
+	
+    
+})//Fim
+
+app.post('/getDisciplina', (req, res) => {
+    
+    let matricula = req.body.matricula;
+	
+	var resposta = "";
+    
+	const mysql = require('mysql');
+
+	/*var config = 
+	{
+		host: 'us-cdbr-east-04.cleardb.com',
+		user: 'b716da7f56001b',
+		password: '9e5f384d',
+		database: 'heroku_b402f720b46aaff',
+		port: '3306'
+	};*/
+
+	const conn = new mysql.createConnection(config);
+
+	conn.connect(
+		function (err) { 
+		if (err) { 
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			console.log({"result":resposta});
+		}
+		else
+		{
+			queryDatabase();
+			conn.end();
+
+		}
+	});
+	
+	function queryDatabase(){
+		conn.query('SELECT * FROM ALUNO_DISCIPLINA AD INNER JOIN DISCIPLINAS D ON AD.ID_DISCIPLINA = D.ID WHERE ID_ALUNO = ? limit 1;', [matricula], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify(err);}
+				else{ qry = JSON.stringify(results); } 
+				res.end(qry);
+			}
+		)
+		/*conn.query('INSERT INTO ALUNOS(MATRICULA, NOME, EMAIL) VALUES (?, ?, ?);', [2026438, 'Usuário Teste', 'email@teste.com'], 
+				function (err, results, fields) {
+					if (err) throw res.end(err);
+			else res.end("Inserted " + results.affectedRows + " row(s).");
+		})*/
+	};
+	
+    
+})//Fim
+
+app.post('/aptoAoPonto', (req, res) => {
+    
+    let disciplina = req.body.disciplina;
+	
+	var resposta = "";
+    
+	const mysql = require('mysql');
+
+	/*var config = 
+	{
+		host: 'us-cdbr-east-04.cleardb.com',
+		user: 'b716da7f56001b',
+		password: '9e5f384d',
+		database: 'heroku_b402f720b46aaff',
+		port: '3306'
+	};*/
+
+	const conn = new mysql.createConnection(config);
+
+	conn.connect(
+		function (err) { 
+		if (err) { 
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			console.log({"result":resposta});
+		}
+		else
+		{
+			queryDatabase();
+			conn.end();
+
+		}
+	});
+	
+	function queryDatabase(){
+		conn.query('SELECT * FROM CHAMADA WHERE ID_DISCIPLINA = ? AND CHAMADA_ABERTA = "S";', [disciplina], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify(err);}
+				else{ qry = JSON.stringify(results); } 
+				res.end(qry);
+			}
+		)
+	};
+    
+})//Fim
+
+app.post('/pontoBatido', (req, res) => {
+    
+    let matricula = req.body.matricula;
+    let disciplina = req.body.disciplina;
+	
+	var resposta = "";
+    
+	const mysql = require('mysql');
+
+	/*var config = 
+	{
+		host: 'us-cdbr-east-04.cleardb.com',
+		user: 'b716da7f56001b',
+		password: '9e5f384d',
+		database: 'heroku_b402f720b46aaff',
+		port: '3306'
+	};*/
+
+	const conn = new mysql.createConnection(config);
+
+	conn.connect(
+		function (err) { 
+		if (err) { 
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			console.log({"result":resposta});
+		}
+		else
+		{
+			queryDatabase();
+			conn.end();
+
+		}
+	});
+	
+		
+	function queryDatabase(){
+		conn.query('SELECT COUNT(*) AS PONTO FROM PONTO WHERE ID_ALUNO = ? AND ID_CHAMADA = ? AND TIPO = "E";', [matricula,disciplina], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify(err);}
+				else{ qry = JSON.stringify(results); } 
+				res.end(qry);
+			}
+		)
+	};
+    
+})//Fim
+
+app.post('/setPonto', (req, res) => {
+    
+    let matricula = req.body.matricula;
+    let disciplina = req.body.disciplina;
+    let tipo = req.body.tipo;
+	
+	var resposta = "";
+    
+	const mysql = require('mysql');
+
+	const conn = new mysql.createConnection(config);
+
+	conn.connect(
+		function (err) { 
+		if (err) { 
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			console.log({"result":resposta});
+		}
+		else
+		{
+			queryDatabase();
+			conn.end();
+
+		}
+	});
+	
+	function queryDatabase(){
+		let typ = null;
+		if (tipo == 0) {
+			typ = 'E';
+		} else {
+			typ = 'S';
+		}
+		conn.query('INSERT INTO PONTO(ID_ALUNO, ID_CHAMADA, TIPO) VALUES (?, ?, ?) ;', [matricula,disciplina,typ], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify({"error":err});}
+				else{
+					if (tipo == "E") {
+						qry = "Entrada Registrada Com Sucesso!";
+					} else {
+						qry = "Saída Registrada Com Sucesso!";
+					}
+					
+					
+				} 
+				res.end(qry);
+			}
+		)
+	};
+	/*function queryDatabase(){
+		
+
+		conn.query('SELECT COUNT(*) PONTO FROM PONTO WHERE ID_ALUNO = ? AND ID_CHAMADA = ? AND TIPO = "E";', [matricula],[disciplina], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify(err);}
+				else{ 
+					conn.query('INSERT INTO ALUNOS(MATRICULA, NOME, EMAIL) VALUES (?, ?, ?);', [2026438, 'Usuário Teste', 'email@teste.com'], 
+						function (err, results, fields) {
+							if (err){ qry = JSON.stringify(err);}
+							else res.end(JSON.stringify(results));
+						}
+					)
+					qry = JSON.stringify(results)
+					//res.end(qry);
+				} 
+				res.end(qry);
+			})
+		
+	};*/
+	
+    
+})//Fim
+
+
+function queryDatabaseSELECT(matricula,disciplina){
+
+	var resposta = "";
+    
+	const mysql = require('mysql');
+
+	const conn = new mysql.createConnection(config);
+
+	conn.connect(
+		function (err) { 
+		if (err) { 
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			//console.log({"result":resposta});
+		}
+		else
+		{
+			var qry = '';
+			conn.query('select (case when (SELECT COUNT(*) FROM PONTO WHERE ID_ALUNO = 1234567 AND ID_CHAMADA = 15 AND TIPO = "E" ) = 0 then "E" else "S" end) AS RETORNO;', [matricula,disciplina], 
+				function (err, results, fields) {
+					
+					if (err){ qry = err;}
+					else{
+						qry = JSON.parse(results);
+						console.log(qry.RETORNO);
+						//res.end(results);
+						
+					} 
+					
+				}
+			)
+
+			console.log(qry);
+			conn.end();
+			return qry;
+
+		}
+	});
+
+
+		
+	};
