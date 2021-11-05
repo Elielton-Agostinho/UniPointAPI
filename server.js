@@ -139,6 +139,7 @@ app.post('/getAluno', (req, res) => {
 app.post('/getDisciplina', (req, res) => {
     
     let matricula = req.body.matricula;
+    let cd_disciplina = req.body.cd_disciplina
 	
 	var resposta = "";
     
@@ -170,11 +171,15 @@ app.post('/getDisciplina', (req, res) => {
 	});
 	
 	function queryDatabase(){
-		conn.query('SELECT * FROM ALUNO_DISCIPLINA AD INNER JOIN DISCIPLINAS D ON AD.ID_DISCIPLINA = D.ID WHERE ID_ALUNO = ? limit 1;', [matricula], 
+		conn.query('SELECT * FROM ALUNO_DISCIPLINA AD INNER JOIN DISCIPLINAS D ON AD.ID_DISCIPLINA = D.ID WHERE ID_ALUNO = ? AND COD_DISC = ?;', [matricula,cd_disciplina], 
 			function (err, results, fields) {
 				let qry = '';
 				if (err){ qry = JSON.stringify(err);}
-				else{ qry = JSON.stringify(results); } 
+				else{ 
+					if (results[0] != undefined) {
+						qry = JSON.stringify(results);
+					} else {qry = JSON.stringify([{"vazio":0}]);}
+					 } 
 				res.end(qry);
 			}
 		)
@@ -226,7 +231,9 @@ app.post('/aptoAoPonto', (req, res) => {
 			function (err, results, fields) {
 				let qry = '';
 				if (err){ qry = JSON.stringify(err);}
-				else{ qry = JSON.stringify(results); } 
+				else{ if (results[0] != undefined) {
+						qry = JSON.stringify(results);
+					} else {qry = JSON.stringify([{"vazio":0}]);} } 
 				res.end(qry);
 			}
 		)
