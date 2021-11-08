@@ -91,6 +91,64 @@ app.post('/login', (req, res) => {
     
 })//Fim
 
+
+app.post('/loginProf', (req, res) => {
+    
+    let matricula = req.body.matricula;
+	let senha = req.body.senha;
+	console.log(matricula+"\n"+senha)
+	
+	var resposta = "";
+    
+	const mysql = require('mysql');
+
+	const conn = new mysql.createConnection(config);
+
+	conn.connect(
+		function (err) { 
+		if (err) { 
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			console.log({"result":resposta});
+		}
+		else
+		{
+			queryDatabase();
+			conn.end();
+
+		}
+	});
+	
+	function queryDatabase(){
+		conn.query('SELECT COUNT(*) AS quant FROM PROFESSORES WHERE MATRICULA = ? AND SENHA LIKE ? ;', [matricula,senha], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify({"result":err});}
+				else{
+					console.log(results[0].quant);
+					if(parseInt(results[0].quant) === 0){
+						qry = JSON.stringify({"result":false});
+					}else{
+						qry = JSON.stringify({"result":true});
+					}
+					
+				} 
+				res.end(qry);
+			}
+		)
+		/*conn.query('INSERT INTO ALUNOS(MATRICULA, NOME, EMAIL) VALUES (?, ?, ?);', [2026438, 'Usuário Teste', 'email@teste.com'], 
+				function (err, results, fields) {
+					if (err) throw res.end(err);
+			else res.end("Inserted " + results.affectedRows + " row(s).");
+		})*/
+	};
+	
+	
+	
+    
+})//Fim
+
+
+
 app.post('/getAluno', (req, res) => {
     
     let matricula = req.body.matricula;
@@ -117,6 +175,51 @@ app.post('/getAluno', (req, res) => {
 	
 	function queryDatabase(){
 		conn.query('SELECT * FROM ALUNOS WHERE MATRICULA = ?;', [matricula], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify(err);}
+				else{ qry = JSON.stringify(results); } 
+				res.end(qry);
+			}
+		)
+		/*conn.query('INSERT INTO ALUNOS(MATRICULA, NOME, EMAIL) VALUES (?, ?, ?);', [2026438, 'Usuário Teste', 'email@teste.com'], 
+				function (err, results, fields) {
+					if (err) throw res.end(err);
+			else res.end("Inserted " + results.affectedRows + " row(s).");
+		})*/
+	};
+	
+	
+	
+    
+})//Fim
+
+app.post('/getProfessor', (req, res) => {
+    
+    let matricula = req.body.matricula;
+	
+	var resposta = "";
+    
+	const mysql = require('mysql');
+
+	const conn = new mysql.createConnection(config);
+
+	conn.connect(
+		function (err) { 
+		if (err) { 
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			console.log({"result":resposta});
+		}
+		else
+		{
+			queryDatabase();
+			conn.end();
+
+		}
+	});
+	
+	function queryDatabase(){
+		conn.query('SELECT * FROM PROFESSORES WHERE MATRICULA = ?;', [matricula], 
 			function (err, results, fields) {
 				let qry = '';
 				if (err){ qry = JSON.stringify(err);}
