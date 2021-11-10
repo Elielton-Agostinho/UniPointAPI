@@ -242,20 +242,11 @@ app.post('/getProfessor', (req, res) => {
 app.post('/getDisciplina', (req, res) => {
     
     let matricula = req.body.matricula;
-    let cd_disciplina = req.body.cd_disciplina
+    let cd_disciplina = req.body.cd_disciplina + '%'
 	
 	var resposta = "";
     
 	const mysql = require('mysql');
-
-	/*var config = 
-	{
-		host: 'us-cdbr-east-04.cleardb.com',
-		user: 'b716da7f56001b',
-		password: '9e5f384d',
-		database: 'heroku_b402f720b46aaff',
-		port: '3306'
-	};*/
 
 	const conn = new mysql.createConnection(config);
 
@@ -274,7 +265,7 @@ app.post('/getDisciplina', (req, res) => {
 	});
 	
 	function queryDatabase(){
-		conn.query('SELECT * FROM ALUNO_DISCIPLINA AD INNER JOIN DISCIPLINAS D ON AD.ID_DISCIPLINA = D.ID WHERE ID_ALUNO = ? AND COD_DISC = ?;', [matricula,cd_disciplina], 
+		conn.query('SELECT D.COD_DISC,D.ID,D.NOME,C.ID AS CHAMADA FROM ALUNO_DISCIPLINA AD INNER JOIN DISCIPLINAS D ON AD.ID_DISCIPLINA = D.ID INNER JOIN CHAMADA AS C ON AD.id_disciplina = C.ID_DISCIPLINA WHERE ID_ALUNO = ? AND COD_DISC LIKE ?;', [matricula,cd_disciplina], 
 			function (err, results, fields) {
 				let qry = '';
 				if (err){ qry = JSON.stringify(err);}
@@ -286,11 +277,49 @@ app.post('/getDisciplina', (req, res) => {
 				res.end(qry);
 			}
 		)
-		/*conn.query('INSERT INTO ALUNOS(MATRICULA, NOME, EMAIL) VALUES (?, ?, ?);', [2026438, 'Usuário Teste', 'email@teste.com'], 
-				function (err, results, fields) {
-					if (err) throw res.end(err);
-			else res.end("Inserted " + results.affectedRows + " row(s).");
-		})*/
+	};
+	
+    
+})//Fim
+
+app.post('/getPonto', (req, res) => {
+    
+    let matricula = req.body.matricula;
+    let cd_disciplina = req.body.cd_disciplina + '%'
+	
+	var resposta = "";
+    
+	const mysql = require('mysql');
+
+	const conn = new mysql.createConnection(config);
+
+	conn.connect(
+		function (err) { 
+		if (err) { 
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			console.log({"result":resposta});
+		}
+		else
+		{
+			queryDatabase();
+			conn.end();
+
+		}
+	});
+	
+	function queryDatabase(){
+		conn.query('SELECT C.ID_DISCIPLINA,C.`DATA`,D.COD_DISC FROM PONTO AS P INNER JOIN CHAMADA AS C  ON P.ID_CHAMADA = C.ID INNER JOIN DISCIPLINAS AS D ON D.ID = C.ID_DISCIPLINA WHERE P.ID_ALUNO = ? AND C.`DATA` <= (DATE_ADD(NOW(), INTERVAL 1 DAY)) LIMIT 2;', [matricula], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify(err);}
+				else{ 
+					if (results[0] != undefined) {
+						qry = JSON.stringify(results);
+					} else {qry = JSON.stringify([{"vazio":0,"retorno":"Não Houve Registro De Presença!"}]);}
+					 } 
+				res.end(qry);
+			}
+		)
 	};
 	
     
