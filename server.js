@@ -479,7 +479,7 @@ app.post('/getPonto', (req, res) => {
 	});
 	
 	function queryDatabase(){
-		conn.query('SELECT C.ID_DISCIPLINA,C.`DATA`,D.COD_DISC FROM PONTO AS P INNER JOIN CHAMADA AS C  ON P.ID_CHAMADA = C.ID INNER JOIN DISCIPLINAS AS D ON D.ID = C.ID_DISCIPLINA WHERE P.ID_ALUNO = ? AND C.`DATA` <= (DATE_ADD(NOW(), INTERVAL 1 DAY));', [matricula], 
+		conn.query('SELECT C.ID_DISCIPLINA,P.DATA,D.COD_DISC FROM PONTO AS P INNER JOIN CHAMADA AS C  ON P.ID_CHAMADA = C.ID INNER JOIN DISCIPLINAS AS D ON D.ID = C.ID_DISCIPLINA WHERE P.ID_ALUNO = ? AND C.`DATA` <= (DATE_ADD(NOW(), INTERVAL 1 DAY));', [matricula], 
 			function (err, results, fields) {
 				let qry = '';
 				if (err){ qry = JSON.stringify(err);}
@@ -597,6 +597,7 @@ app.post('/setPonto', (req, res) => {
     let matricula = req.body.matricula;
     let disciplina = req.body.disciplina;
     let tipo = req.body.tipo;
+    let horario = req.body.horario;
 	
 	var resposta = "";
     
@@ -620,7 +621,7 @@ app.post('/setPonto', (req, res) => {
 	
 	function queryDatabase(){
 		
-		conn.query('INSERT INTO PONTO(ID_ALUNO, ID_CHAMADA, TIPO) VALUES (?, ?, ?) ;', [matricula,disciplina,tipo], 
+		conn.query('INSERT INTO PONTO(ID_ALUNO, ID_CHAMADA, TIPO,DATA) VALUES (?, ?, ?,?) ;', [matricula,disciplina,tipo,horario], 
 			function (err, results, fields) {
 				let qry = '';
 				if (err){ qry = JSON.stringify({"error":err});}
@@ -637,27 +638,6 @@ app.post('/setPonto', (req, res) => {
 			}
 		)
 	};
-	/*function queryDatabase(){
-		
-
-		conn.query('SELECT COUNT(*) PONTO FROM PONTO WHERE ID_ALUNO = ? AND ID_CHAMADA = ? AND TIPO = "E";', [matricula],[disciplina], 
-			function (err, results, fields) {
-				let qry = '';
-				if (err){ qry = JSON.stringify(err);}
-				else{ 
-					conn.query('INSERT INTO ALUNOS(MATRICULA, NOME, EMAIL) VALUES (?, ?, ?);', [2026438, 'Usuário Teste', 'email@teste.com'], 
-						function (err, results, fields) {
-							if (err){ qry = JSON.stringify(err);}
-							else res.end(JSON.stringify(results));
-						}
-					)
-					qry = JSON.stringify(results)
-					//res.end(qry);
-				} 
-				res.end(qry);
-			})
-		
-	};*/
 	
     
 })//Fim
