@@ -374,7 +374,7 @@ app.post('/abrirChamada', (req, res) => {
     
     let disciplina = req.body.disciplina;
 	let professor = req.body.professor;
-	
+
 	var resposta = "";
     
 	const mysql = require('mysql');
@@ -479,7 +479,7 @@ app.post('/getPonto', (req, res) => {
 	});
 	
 	function queryDatabase(){
-		conn.query('SELECT C.ID_DISCIPLINA,C.`DATA`,D.COD_DISC FROM PONTO AS P INNER JOIN CHAMADA AS C  ON P.ID_CHAMADA = C.ID INNER JOIN DISCIPLINAS AS D ON D.ID = C.ID_DISCIPLINA WHERE P.ID_ALUNO = ? AND C.`DATA` <= (DATE_ADD(NOW(), INTERVAL 1 DAY)) LIMIT 2;', [matricula], 
+		conn.query('SELECT C.ID_DISCIPLINA,C.`DATA`,D.COD_DISC FROM PONTO AS P INNER JOIN CHAMADA AS C  ON P.ID_CHAMADA = C.ID INNER JOIN DISCIPLINAS AS D ON D.ID = C.ID_DISCIPLINA WHERE P.ID_ALUNO = ? AND C.`DATA` <= (DATE_ADD(NOW(), INTERVAL 1 DAY));', [matricula], 
 			function (err, results, fields) {
 				let qry = '';
 				if (err){ qry = JSON.stringify(err);}
