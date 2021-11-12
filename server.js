@@ -282,6 +282,177 @@ app.post('/getDisciplina', (req, res) => {
     
 })//Fim
 
+app.post('/getDisciplinaProf', (req, res) => {
+    
+    let matricula = req.body.matricula;
+    let cd_disciplina = req.body.cd_disciplina + '%'
+	
+	var resposta = "";
+    
+	const mysql = require('mysql');
+
+	const conn = new mysql.createConnection(config);
+
+	conn.connect(
+		function (err) { 
+		if (err) { 
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			console.log({"result":resposta});
+		}
+		else
+		{
+			queryDatabase();
+			conn.end();
+
+		}
+	});
+	
+	function queryDatabase(){
+		conn.query('SELECT D.COD_DISC,D.ID,D.NOME FROM PROFESSOR_DISCIPLINA AD INNER JOIN DISCIPLINAS D ON AD.ID_DISCIPLINA = D.ID WHERE ID_PROFESSOR = ? AND COD_DISC LIKE ? LIMIT 2;', [matricula,cd_disciplina], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify(err);}
+				else{ 
+					if (results[0] != undefined) {
+						qry = JSON.stringify(results);
+					} else {qry = JSON.stringify([{"vazio":0}]);}
+					 } 
+				res.end(qry);
+			}
+		)
+	};
+	
+    
+})//Fim
+
+app.post('/verificaDisciplianAberta', (req, res) => {
+    
+    let matricula = req.body.matricula;
+    let cd_disciplina = req.body.cd_disciplina
+    let cod_disc_comp = req.body.cod_disc_comp
+	
+	var resposta = "";
+    
+	const mysql = require('mysql');
+
+	const conn = new mysql.createConnection(config);
+
+	conn.connect(
+		function (err) { 
+		if (err) { 
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			console.log({"result":resposta});
+		}
+		else
+		{
+			queryDatabase();
+			conn.end();
+
+		}
+	});
+	
+	function queryDatabase(){
+		conn.query('Select (case when (SELECT COUNT(*) FROM CHAMADA AS C INNER JOIN PROFESSORES AS P ON C.ID_PROFESSOR = P.MATRICULA INNER JOIN DISCIPLINAS AS D ON D.ID = C.ID_DISCIPLINA WHERE P.MATRICULA = ? AND C.ID_DISCIPLINA = ? AND C.CHAMADA_ABERTA = "S" AND D.COD_DISC = ? ) = 1 then (SELECT C.ID FROM CHAMADA AS C INNER JOIN PROFESSORES AS P ON C.ID_PROFESSOR = P.MATRICULA WHERE P.MATRICULA = ? AND C.ID_DISCIPLINA = ? AND C.CHAMADA_ABERTA = "S" ) else "N" end) AS RETORNO;', [matricula,cd_disciplina,cod_disc_comp,matricula,cd_disciplina], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify(err);}
+				else{ 
+					if (results[0] != undefined) {
+						qry = JSON.stringify(results);
+					} else {qry = JSON.stringify([{"vazio":0}]);}
+					 } 
+				res.end(qry);
+			}
+		)
+	};
+	
+    
+})//Fim
+
+
+app.post('/abrirChamada', (req, res) => {
+    
+    let disciplina = req.body.disciplina;
+	let professor = req.body.professor;
+	
+	var resposta = "";
+    
+	const mysql = require('mysql');
+
+	const conn = new mysql.createConnection(config);
+
+	conn.connect(
+		function (err) { 
+		if (err) { 
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			console.log({"result":resposta});
+		}
+		else
+		{
+			queryDatabase();
+			conn.end();
+
+		}
+	});
+	
+	function queryDatabase(){
+		
+		conn.query('INSERT INTO CHAMADA(ID_DISCIPLINA,DATA,CHAMADA_ABERTA,ID_PROFESSOR) VALUES(?,SYSDATE(),"S",?) ;', [disciplina,professor], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify({"error":err});}
+				else{
+					qry = "Chamada Encerrada Com Sucesso!";
+				} 
+				res.end(qry);
+			}
+		)
+	};
+	
+    
+})//Fim
+
+app.post('/fecharChamada', (req, res) => {
+    
+    let id_chamada = req.body.id_chamada;
+	
+	var resposta = "";
+    
+	const mysql = require('mysql');
+
+	const conn = new mysql.createConnection(config);
+
+	conn.connect(
+		function (err) { 
+		if (err) { 
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			console.log({"result":resposta});
+		}
+		else
+		{
+			queryDatabase();
+			conn.end();
+
+		}
+	});
+	
+	function queryDatabase(){
+		
+		conn.query('UPDATE CHAMADA SET CHAMADA_ABERTA = "N" WHERE ID = ? ;', [id_chamada], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify({"error":err});}
+				else{
+					qry = "Chamada Encerrada Com Sucesso!";
+				} 
+				res.end(qry);
+			}
+		)
+	};
+	
+    
+})//Fim
+
 app.post('/getPonto', (req, res) => {
     
     let matricula = req.body.matricula;
