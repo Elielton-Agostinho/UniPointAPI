@@ -496,6 +496,178 @@ app.post('/getPonto', (req, res) => {
     
 })//Fim
 
+app.post('/getPontoProfessor', (req, res) => {
+    
+    let matricula = req.body.matricula;
+    let data = req.body.data
+	
+	var resposta = "";
+    
+	const mysql = require('mysql');
+
+	const conn = new mysql.createConnection(config);
+
+	conn.connect(
+		function (err) { 
+		if (err) { 
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			console.log({"result":resposta});
+		}
+		else
+		{
+			queryDatabase();
+			conn.end();
+
+		}
+	});
+	
+	function queryDatabase(){
+		conn.query('SELECT * FROM PONTO_PROFESSOR AS PF WHERE PF.ID_PROFESSOR = ? AND PF.DATA = ? ORDER BY PF.ID DESC;', [matricula,data], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify(err);}
+				else{ 
+					if (results[0] != undefined) {
+						qry = JSON.stringify(results);
+					} else {qry = JSON.stringify([{"vazio":0,"retorno":"Não Houve Registro De Ponto!"}]);}
+					 } 
+				res.end(qry);
+			}
+		)
+	};
+	
+    
+})//Fim
+
+app.post('/getHorariosPontoProfessor', (req, res) => {
+    
+    let id_ponto = req.body.id_ponto;
+	
+	var resposta = "";
+    
+	const mysql = require('mysql');
+
+	const conn = new mysql.createConnection(config);
+
+	conn.connect(
+		function (err) { 
+		if (err) { 
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			console.log({"result":resposta});
+		}
+		else
+		{
+			queryDatabase();
+			conn.end();
+
+		}
+	});
+	
+	function queryDatabase(){
+		conn.query('SELECT * FROM PONTO_PROFESSOR_AUX AS PFA WHERE PFA.ID_PONTO_PROFESSOR = ?;', [id_ponto], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify(err);}
+				else{ 
+					if (results[0] != undefined) {
+						qry = JSON.stringify(results);
+					} else {qry = JSON.stringify([{"vazio":0,"retorno":"Não Houve Registro De Ponto!"}]);}
+					 } 
+				res.end(qry);
+			}
+		)
+	};
+	
+    
+})//Fim
+
+app.post('/getTipoPontoProfessor', (req, res) => {
+    
+    let matricula = req.body.matricula;
+    let data = req.body.data
+	
+	var resposta = "";
+    
+	const mysql = require('mysql');
+
+	const conn = new mysql.createConnection(config);
+
+	conn.connect(
+		function (err) { 
+		if (err) { 
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			console.log({"result":resposta});
+		}
+		else
+		{
+			queryDatabase();
+			conn.end();
+
+		}
+	});
+	
+	function queryDatabase(){
+		conn.query('select (case when (SELECT COUNT(*) FROM PONTO_PROFESSOR AS P INNER JOIN ponto_professor_aux AS PA ON P.ID = PA.ID_PONTO_PROFESSOR WHERE P.ID_PROFESSOR = ? AND P.`DATA` = ? AND PA.TIPO = "E" ) = 0 then "E" else (select (case when (SELECT PA2.TIPO FROM PONTO_PROFESSOR AS P2 INNER JOIN ponto_professor_aux AS PA2 ON P2.ID = PA2.ID_PONTO_PROFESSOR WHERE P2.ID_PROFESSOR = ? AND P2.`DATA` = ? ORDER BY PA2.ID DESC LIMIT 1 ) = "S" then "E" else "S" end)) end) AS RETORNO;', [matricula,data,matricula,data], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify(err);}
+				else{ 
+					if (results[0] != undefined) {
+						qry = JSON.stringify(results);
+					} else {qry = JSON.stringify([{"vazio":0,"retorno":"Não Houve Registro De Presença!"}]);}
+					 } 
+				res.end(qry);
+			}
+		)
+	};
+	
+    
+})//Fim
+
+app.post('/setTipoPontoProfessorAux', (req, res) => {
+    
+    let matricula = req.body.matricula;
+    let data = req.body.data;
+    let hora = req.body.hora;
+    let tipo = req.body.tipo;
+	
+	var resposta = "";
+    
+	const mysql = require('mysql');
+
+	const conn = new mysql.createConnection(config);
+
+	conn.connect(
+		function (err) { 
+		if (err) { 
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			console.log({"result":resposta});
+		}
+		else
+		{
+			queryDatabase();
+			conn.end();
+
+		}
+	});
+	
+	function queryDatabase(){
+		
+		conn.query('INSERT INTO PONTO_PROFESSOR_AUX(ID_PONTO_PROFESSOR,TIPO,HORA) VALUES((select p.id from ponto_professor as p where p.id_professor = ? and data = ?),?,?);', [matricula,data,tipo,hora], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify({"error":err});}
+				else{
+					qry = "Ponto Registrado Com Sucesso!";
+				} 
+				res.end(qry);
+			}
+		)
+	};
+	
+    
+})//Fim
+
 app.post('/aptoAoPonto', (req, res) => {
     
     let disciplina = req.body.disciplina;
@@ -580,7 +752,7 @@ app.post('/pontoBatido', (req, res) => {
 	
 		
 	function queryDatabase(){
-		conn.query('select (case when (SELECT COUNT(*) FROM PONTO AS P INNER JOIN CHAMADA AS C ON P.ID_CHAMADA = C.ID WHERE P.ID_ALUNO = ? AND C.ID_DISCIPLINA = ? AND P.TIPO = "E" ) = 0 then "E" else "S" end) AS RETORNO', [matricula,disciplina], 
+		conn.query('select (case when (SELECT COUNT(*) FROM PONTO AS P INNER JOIN CHAMADA AS C ON P.ID_CHAMADA = C.ID WHERE P.ID_ALUNO = ? AND C.ID_DISCIPLINA = ? AND P.TIPO = "E" ) = 0 then "E" else "S" end) AS RETORNO;', [matricula,disciplina], 
 			function (err, results, fields) {
 				let qry = '';
 				if (err){ qry = JSON.stringify(err);}
