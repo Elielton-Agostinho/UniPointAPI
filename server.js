@@ -668,6 +668,50 @@ app.post('/setTipoPontoProfessorAux', (req, res) => {
     
 })//Fim
 
+app.post('/setTipoPontoProfessor', (req, res) => {
+    
+    let matricula = req.body.matricula;
+    let data = req.body.data;
+    let hora = req.body.hora;
+    let tipo = req.body.tipo;
+	
+	var resposta = "";
+    
+	const mysql = require('mysql');
+
+	const conn = new mysql.createConnection(config);
+
+	conn.connect(
+		function (err) { 
+		if (err) { 
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			console.log({"result":resposta});
+		}
+		else
+		{
+			queryDatabase();
+			conn.end();
+
+		}
+	});
+	
+	function queryDatabase(){
+		
+		conn.query('INSERT INTO PONTO_PROFESSOR_AUX(ID_PROFESSOR,DATA) VALUES(?,?);', [matricula,data], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify({"error":err});}
+				else{
+					qry = "Ponto Registrado Com Sucesso!";
+				} 
+				res.end(qry);
+			}
+		)
+	};
+	
+    
+})//Fim
+
 app.post('/aptoAoPonto', (req, res) => {
     
     let disciplina = req.body.disciplina;
