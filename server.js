@@ -697,7 +697,7 @@ app.post('/setTipoPontoProfessor', (req, res) => {
 	
 	function queryDatabase(){
 		
-		conn.query('INSERT INTO PONTO_PROFESSOR_AUX(ID_PROFESSOR,DATA) VALUES(?,?);', [matricula,data], 
+		conn.query('INSERT INTO PONTO_PROFESSOR(ID_PROFESSOR,DATA) VALUES(?,?);', [matricula,data], 
 			function (err, results, fields) {
 				let qry = '';
 				if (err){ qry = JSON.stringify({"error":err});}
