@@ -607,7 +607,7 @@ app.post('/getTipoPontoProfessor', (req, res) => {
 	});
 	
 	function queryDatabase(){
-		conn.query('select (case when (SELECT COUNT(*) FROM PONTO_PROFESSOR AS P INNER JOIN ponto_professor_aux AS PA ON P.ID = PA.ID_PONTO_PROFESSOR WHERE P.ID_PROFESSOR = ? AND P.`DATA` = ? AND PA.TIPO = "E" ) = 0 then "E" else (select (case when (SELECT PA2.TIPO FROM PONTO_PROFESSOR AS P2 INNER JOIN ponto_professor_aux AS PA2 ON P2.ID = PA2.ID_PONTO_PROFESSOR WHERE P2.ID_PROFESSOR = ? AND P2.`DATA` = ? ORDER BY PA2.ID DESC LIMIT 1 ) = "S" then "E" else "S" end)) end) AS RETORNO;', [matricula,data,matricula,data], 
+		conn.query('select (case when (SELECT COUNT(*) FROM PONTO_PROFESSOR AS P INNER JOIN ponto_professor_aux AS PA ON P.ID = PA.ID_PONTO_PROFESSOR WHERE P.ID_PROFESSOR = ? AND P.`DATA` = ? AND PA.TIPO = "E" ) = 0 then "E1" else (select (case when (SELECT PA2.TIPO FROM PONTO_PROFESSOR AS P2 INNER JOIN ponto_professor_aux AS PA2 ON P2.ID = PA2.ID_PONTO_PROFESSOR WHERE P2.ID_PROFESSOR = ? AND P2.`DATA` = ? ORDER BY PA2.ID DESC LIMIT 1 ) = "S" then "E" else "S" end)) end) AS RETORNO;', [matricula,data,matricula,data], 
 			function (err, results, fields) {
 				let qry = '';
 				if (err){ qry = JSON.stringify(err);}
