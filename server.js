@@ -265,7 +265,7 @@ app.post('/getDisciplina', (req, res) => {
 	});
 	
 	function queryDatabase(){
-		conn.query('SELECT D.COD_DISC,D.ID,D.NOME,C.ID AS CHAMADA FROM ALUNO_DISCIPLINA AD INNER JOIN DISCIPLINAS D ON AD.ID_DISCIPLINA = D.ID INNER JOIN CHAMADA AS C ON AD.id_disciplina = C.ID_DISCIPLINA WHERE ID_ALUNO = ? AND COD_DISC LIKE ?;', [matricula,cd_disciplina], 
+		conn.query('SELECT D.COD_DISC,D.ID,D.NOME FROM ALUNO_DISCIPLINA AD INNER JOIN DISCIPLINAS D ON AD.ID_DISCIPLINA = D.ID WHERE ID_ALUNO = ? AND COD_DISC LIKE ?;', [matricula,cd_disciplina], 
 			function (err, results, fields) {
 				let qry = '';
 				if (err){ qry = JSON.stringify(err);}
