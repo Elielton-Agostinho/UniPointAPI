@@ -91,6 +91,48 @@ app.post('/login', (req, res) => {
     
 })//Fim
 
+app.post('/getAlunosDisciplina', (req, res) => {
+    
+    let matricula = req.body.matricula;
+    let cd_disciplina = req.body.cd_disciplina
+	
+	var resposta = "";
+    
+	const mysql = require('mysql');
+
+	const conn = new mysql.createConnection(config);
+
+	conn.connect(
+		function (err) { 
+		if (err) { 
+			resposta = "!!! Cannot connect !!! Error:"+err;
+			console.log({"result":resposta});
+		}
+		else
+		{
+			queryDatabase();
+			conn.end();
+
+		}
+	});
+	
+	function queryDatabase(){
+		conn.query('Select A.MATRICULA, A.NOME from PONTO P INNER JOIN CHAMADA C ON P.ID_CHAMADA = C.ID INNER JOIN ALUNOS A ON P.ID_ALUNO = A.MATRICULA WHERE C.ID_PROFESSOR = ? AND C.ID_DISCIPLINA = ?;', [matricula,cd_disciplina], 
+			function (err, results, fields) {
+				let qry = '';
+				if (err){ qry = JSON.stringify(err);}
+				else{ 
+					if (results[0] != undefined) {
+						qry = JSON.stringify(results);
+					} else {qry = JSON.stringify([{"vazio":0}]);}
+					 } 
+				res.end(qry);
+			}
+		)
+	};
+	
+    
+})//Fim
 
 app.post('/loginProf', (req, res) => {
     
