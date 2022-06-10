@@ -885,9 +885,9 @@ app.post('/setPonto', (req, res) => {
 				if (err){ qry = JSON.stringify({"error":err});}
 				else{
 					if (tipo == "E") {
-						qry = true;
+						qry = JSON.stringify({"result":true});
 					} else {
-						qry = false;
+						qry = JSON.stringify({"result":false});
 					}
 					
 					
