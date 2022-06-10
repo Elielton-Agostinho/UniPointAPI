@@ -885,9 +885,9 @@ app.post('/setPonto', (req, res) => {
 				if (err){ qry = JSON.stringify({"error":err});}
 				else{
 					if (tipo == "E") {
-						qry = "Entrada Registrada Com Sucesso!";
+						qry = true;
 					} else {
-						qry = "Saída Registrada Com Sucesso!";
+						qry = false;
 					}
 					
 					
